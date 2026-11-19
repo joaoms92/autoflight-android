@@ -22,8 +22,8 @@ header {
 h1 {
   color: #d8bd83;
   letter-spacing: 5px;
-  margin: 0;
   font-size: 30px;
+  margin: 0;
 }
 .subtitle {
   color: #bdc8d7;
@@ -43,30 +43,18 @@ main {
   padding: 22px;
   margin: 20px 0;
 }
-h2 {
-  color: #e0c58e;
-  margin-top: 0;
-}
+h2 { color: #e0c58e; }
 p { color: #c4cfdd; }
-input {
-  width: 100%;
-  margin: 15px 0;
-  font-size: 13px;
-  color: white;
-}
 button {
+  width: 100%;
   background: #c5a66b;
   color: #101a2a;
   border: none;
   border-radius: 8px;
-  padding: 14px 22px;
-  margin: 5px;
+  padding: 14px;
+  margin: 7px 0;
   font-size: 16px;
   font-weight: bold;
-  width: 100%;
-}
-button:disabled {
-  opacity: .4;
 }
 .status {
   color: #d8bd83;
@@ -80,6 +68,7 @@ footer {
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -92,19 +81,17 @@ footer {
 <div class="card">
 <h2>✈ COMANDANTE BRIAN</h2>
 <p>Comunicados do comandante</p>
-<input type="file" id="brianFile" accept="audio/*">
-<button id="brianPlay" disabled>▶ REPRODUZIR</button>
-<button id="brianPause" disabled>Ⅱ PAUSAR</button>
-<div class="status" id="brianStatus">Aguardando áudio</div>
+<button onclick="tocar('brian')">▶ REPRODUZIR</button>
+<button onclick="pausar('brian')">Ⅱ PAUSAR</button>
+<div class="status" id="brianStatus">Carregando comunicado...</div>
 </div>
 
 <div class="card">
 <h2>✈ COMISSÁRIA VITÓRIA</h2>
 <p>Comunicados da tripulação</p>
-<input type="file" id="vitoriaFile" accept="audio/*">
-<button id="vitoriaPlay" disabled>▶ REPRODUZIR</button>
-<button id="vitoriaPause" disabled>Ⅱ PAUSAR</button>
-<div class="status" id="vitoriaStatus">Aguardando áudio</div>
+<button onclick="tocar('vitoria')">▶ REPRODUZIR</button>
+<button onclick="pausar('vitoria')">Ⅱ PAUSAR</button>
+<div class="status" id="vitoriaStatus">Carregando comunicado...</div>
 </div>
 
 <div class="card">
@@ -117,54 +104,46 @@ footer {
 
 <footer>
 AUTOFLIGHT © 2026<br>
-Sua viagem, nossa missão.
+SUA VIAGEM, NOSSA MISSÃO
 </footer>
 
 <script>
+const audios = {
+  brian: new Audio("./Brian_boas_vindas.mp3"),
+  vitoria: new Audio("./Vitoria_boas_vindas.mp3")
+};
 
-<script>
-function configurar(nome, arquivo) {
-  const play = document.getElementById(nome + "Play");
-  const pause = document.getElementById(nome + "Pause");
+function tocar(nome) {
+  const audio = audios[nome];
   const status = document.getElementById(nome + "Status");
 
-  const audio = new Audio(
-    "/autoflight-android/" + arquivo
-  );
-
-  audio.preload = "none";
-
-  play.disabled = false;
-  pause.disabled = false;
-
-  status.textContent = "Comunicado disponível";
-
-  play.addEventListener("click", () => {
-    audio.play().then(() => {
-      status.textContent = "Comunicado em reprodução";
-    }).catch(() => {
-      status.textContent = "Erro ao carregar áudio";
-    });
+  Object.keys(audios).forEach(chave => {
+    if (chave !== nome) audios[chave].pause();
   });
 
-  pause.addEventListener("click", () => {
-    audio.pause();
-    status.textContent = "Comunicado pausado";
-  });
-
-  audio.addEventListener("ended", () => {
-    status.textContent = "Comunicado concluído";
-  });
-
-  audio.addEventListener("error", () => {
-    status.textContent = "Áudio indisponível. Verifique a publicação.";
-  });
+  audio.play()
+    .then(() => status.textContent = "Comunicado em reprodução")
+    .catch(() => status.textContent = "Erro ao reproduzir. Verifique o áudio.");
 }
 
-configurar("brian", "Brian_boas_vindas.mp3");
-configurar("vitoria", "Vitoria_boas_vindas.mp3");
-</script>
+function pausar(nome) {
+  audios[nome].pause();
+  document.getElementById(nome + "Status").textContent = "Comunicado pausado";
+}
 
+Object.keys(audios).forEach(nome => {
+  audios[nome].addEventListener("ended", () => {
+    document.getElementById(nome + "Status").textContent = "Comunicado concluído";
+  });
+
+  audios[nome].addEventListener("error", () => {
+    document.getElementById(nome + "Status").textContent = "Erro ao carregar áudio";
+  });
+
+  audios[nome].addEventListener("canplay", () => {
+    document.getElementById(nome + "Status").textContent = "Comunicado disponível";
+  });
+});
 </script>
 
 </body>
