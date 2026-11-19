@@ -51,11 +51,16 @@ button {
   color: #101a2a;
   border: none;
   border-radius: 8px;
-  padding: 14px;
+  padding: 15px;
   margin: 7px 0;
   font-size: 16px;
   font-weight: bold;
 }
+button.secondary {
+  background: #344860;
+  color: white;
+}
+button:disabled { opacity: .45; }
 .status {
   color: #d8bd83;
   font-size: 13px;
@@ -68,7 +73,6 @@ footer {
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -79,34 +83,35 @@ footer {
 <main>
 
 <div class="card">
+<h2>✈ CENTRAL DE OPERAÇÕES</h2>
+<p>Prepare-se para sua viagem.</p>
+<button id="start">✈ INICIAR VIAGEM</button>
+<button id="stop" class="secondary" disabled>■ ENCERRAR SEQUÊNCIA</button>
+<div class="status" id="sequenceStatus">Aguardando autorização para embarque</div>
+</div>
+
+<div class="card">
 <h2>✈ COMANDANTE BRIAN</h2>
 <p>Comunicados do comandante</p>
 <button onclick="tocar('brian')">▶ REPRODUZIR</button>
-<button onclick="pausar('brian')">Ⅱ PAUSAR</button>
-<div class="status" id="brianStatus">Carregando comunicado...</div>
+<button onclick="pausar('brian')" class="secondary">Ⅱ PAUSAR</button>
+<div class="status" id="brianStatus">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMISSÁRIA VITÓRIA</h2>
 <p>Comunicados da tripulação</p>
 <button onclick="tocar('vitoria')">▶ REPRODUZIR</button>
-<button onclick="pausar('vitoria')">Ⅱ PAUSAR</button>
-<div class="status" id="vitoriaStatus">Carregando comunicado...</div>
-</div>
-
-<div class="card">
-<h2>INFORMAÇÕES DE VOO</h2>
-<p>Bem-vindo a bordo da AUTOFLIGHT.</p>
-<p>Prepare-se para uma experiência especial durante sua viagem.</p>
+<button onclick="pausar('vitoria')" class="secondary">Ⅱ PAUSAR</button>
+<div class="status" id="vitoriaStatus">Comunicado disponível</div>
 </div>
 
 </main>
 
 <footer>
-AUTOFLIGHT © 2026<br> 
+AUTOFLIGHT © 2026<br>
 SUA VIAGEM, NOSSA MISSÃO
 </footer>
-
 
 <script>
 const audios = {
@@ -114,31 +119,99 @@ const audios = {
   vitoria: new Audio("./Vitoria_boas_vindas.mp3")
 };
 
-function tocar(nome) {
-  const audio = audios[nome];
-  const status = document.getElementById(nome + "Status");
+let sequenciaAtiva = false;
+let etapa = 0;
+const etapas = ["vitoria", "brian"];
 
-  Object.keys(audios).forEach(chave => {
-    if (chave !== nome) audios[chave].pause();
+const start = document.getElementById("start");
+const stop = document.getElementById("stop");
+const sequenceStatus = document.getElementById("sequenceStatus");
+
+function atualizar(nome, mensagem) {
+  document.getElementById(nome + "Status").textContent = mensagem;
+}
+
+function pararTodos() {
+  Object.values(audios).forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
   });
+}
 
-  audio.play()
-    .then(() => status.textContent = "Comunicado em reprodução")
-    .catch(() => status.textContent = "Erro ao reproduzir áudio");
+async function tocar(nome) {
+  pararTodos();
+  try {
+    await audios[nome].play();
+    atualizar(nome, "Comunicado em reprodução");
+  } catch (erro) {
+    atualizar(nome, "Erro ao reproduzir áudio");
+  }
 }
 
 function pausar(nome) {
   audios[nome].pause();
-  document.getElementById(nome + "Status").textContent = "Comunicado pausado";
+  atualizar(nome, "Comunicado pausado");
 }
 
-Object.keys(audios).forEach(nome => {
+async function proximaEtapa() {
+  if (!sequenciaAtiva) return;
+
+  if (etapa >= etapas.length) {
+    sequenciaAtiva = false;
+    start.disabled = false;
+    stop.disabled = true;
+    sequenceStatus.textContent = "Sequência de viagem concluída";
+    return;
+  }
+
+  const nome = etapas[etapa];
+  const audio = audios[nome];
+
+  sequenceStatus.textContent =
+    nome === "vitoria"
+    ? "Vitória: boas-vindas a bordo"
+    : "Brian: apresentação do comandante";
+
+  atualizar(nome, "Comunicado em reprodução");
+
+  try {
+    await audio.play();
+  } catch (erro) {
+    sequenciaAtiva = false;
+    start.disabled = false;
+    stop.disabled = true;
+    sequenceStatus.textContent = "Erro ao carregar o comunicado";
+  }
+}
+
+start.addEventListener("click", () => {
+  pararTodos();
+  etapa = 0;
+  sequenciaAtiva = true;
+  start.disabled = true;
+  stop.disabled = false;
+  proximaEtapa();
+});
+
+stop.addEventListener("click", () => {
+  sequenciaAtiva = false;
+  pararTodos();
+  start.disabled = false;
+  stop.disabled = true;
+  sequenceStatus.textContent = "Sequência encerrada";
+});
+
+etapas.forEach(nome => {
   audios[nome].addEventListener("ended", () => {
-    document.getElementById(nome + "Status").textContent = "Comunicado concluído";
+    atualizar(nome, "Comunicado concluído");
+
+    if (sequenciaAtiva) {
+      etapa++;
+      proximaEtapa();
+    }
   });
 });
 </script>
-
 
 </body>
 </html>
