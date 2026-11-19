@@ -107,6 +107,7 @@ AUTOFLIGHT © 2026<br>
 SUA VIAGEM, NOSSA MISSÃO
 </footer>
 
+
 <script>
 const audios = {
   brian: new Audio("./Brian_boas_vindas.mp3"),
@@ -123,7 +124,7 @@ function tocar(nome) {
 
   audio.play()
     .then(() => status.textContent = "Comunicado em reprodução")
-    .catch(() => status.textContent = "Erro ao reproduzir. Verifique o áudio.");
+    .catch(() => status.textContent = "Erro ao reproduzir áudio");
 }
 
 function pausar(nome) {
@@ -135,16 +136,9 @@ Object.keys(audios).forEach(nome => {
   audios[nome].addEventListener("ended", () => {
     document.getElementById(nome + "Status").textContent = "Comunicado concluído";
   });
-
-  audios[nome].addEventListener("error", () => {
-    document.getElementById(nome + "Status").textContent = "Erro ao carregar áudio";
-  });
-
-  audios[nome].addEventListener("canplay", () => {
-    document.getElementById(nome + "Status").textContent = "Comunicado disponível";
-  });
 });
 </script>
+
 
 </body>
 </html>
