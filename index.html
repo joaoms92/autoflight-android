@@ -121,27 +121,29 @@ Sua viagem, nossa missão.
 </footer>
 
 <script>
-function configurar(nome) {
-  const file = document.getElementById(nome + "File");
+
+<script>
+function configurar(nome, arquivo) {
   const play = document.getElementById(nome + "Play");
   const pause = document.getElementById(nome + "Pause");
   const status = document.getElementById(nome + "Status");
-  const audio = new Audio();
 
-  file.addEventListener("change", () => {
-    if (!file.files.length) return;
-    audio.pause();
-    audio.src = URL.createObjectURL(file.files[0]);
-    play.disabled = false;
-    pause.disabled = false;
-    status.textContent = "Áudio carregado: " + file.files[0].name;
-  });
+  const audio = new Audio(
+    "/autoflight-android/" + arquivo
+  );
+
+  audio.preload = "none";
+
+  play.disabled = false;
+  pause.disabled = false;
+
+  status.textContent = "Comunicado disponível";
 
   play.addEventListener("click", () => {
     audio.play().then(() => {
       status.textContent = "Comunicado em reprodução";
     }).catch(() => {
-      status.textContent = "Não foi possível reproduzir o áudio";
+      status.textContent = "Erro ao carregar áudio";
     });
   });
 
@@ -153,10 +155,16 @@ function configurar(nome) {
   audio.addEventListener("ended", () => {
     status.textContent = "Comunicado concluído";
   });
+
+  audio.addEventListener("error", () => {
+    status.textContent = "Áudio indisponível. Verifique a publicação.";
+  });
 }
 
-configurar("brian");
-configurar("vitoria");
+configurar("brian", "Brian_boas_vindas.mp3");
+configurar("vitoria", "Vitoria_boas_vindas.mp3");
+</script>
+
 </script>
 
 </body>
