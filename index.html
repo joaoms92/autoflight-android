@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUTOFLIGHT</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #101a2a;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+header {
+  padding: 30px 15px;
+  background: #07111f;
+  border-bottom: 2px solid #c6a66b;
+}
+h1 {
+  color: #d8bd83;
+  letter-spacing: 5px;
+  margin: 0;
+  font-size: 30px;
+}
+.subtitle {
+  color: #bdc8d7;
+  margin-top: 10px;
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+main {
+  max-width: 480px;
+  margin: auto;
+  padding: 20px;
+}
+.card {
+  background: #1c2b40;
+  border: 1px solid #40516a;
+  border-radius: 14px;
+  padding: 22px;
+  margin: 20px 0;
+}
+h2 {
+  color: #e0c58e;
+  margin-top: 0;
+}
+p { color: #c4cfdd; }
+input {
+  width: 100%;
+  margin: 15px 0;
+  font-size: 13px;
+  color: white;
+}
+button {
+  background: #c5a66b;
+  color: #101a2a;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 22px;
+  margin: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+}
+button:disabled {
+  opacity: .4;
+}
+.status {
+  color: #d8bd83;
+  font-size: 13px;
+  margin-top: 12px;
+}
+footer {
+  color: #8795a8;
+  padding: 25px;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>AUTOFLIGHT</h1>
+<div class="subtitle">EXPERIÊNCIA DE AVIAÇÃO COMERCIAL</div>
+</header>
+
+<main>
+
+<div class="card">
+<h2>✈ COMANDANTE BRIAN</h2>
+<p>Comunicados do comandante</p>
+<input type="file" id="brianFile" accept="audio/*">
+<button id="brianPlay" disabled>▶ REPRODUZIR</button>
+<button id="brianPause" disabled>Ⅱ PAUSAR</button>
+<div class="status" id="brianStatus">Aguardando áudio</div>
+</div>
+
+<div class="card">
+<h2>✈ COMISSÁRIA VITÓRIA</h2>
+<p>Comunicados da tripulação</p>
+<input type="file" id="vitoriaFile" accept="audio/*">
+<button id="vitoriaPlay" disabled>▶ REPRODUZIR</button>
+<button id="vitoriaPause" disabled>Ⅱ PAUSAR</button>
+<div class="status" id="vitoriaStatus">Aguardando áudio</div>
+</div>
+
+<div class="card">
+<h2>INFORMAÇÕES DE VOO</h2>
+<p>Bem-vindo a bordo da AUTOFLIGHT.</p>
+<p>Prepare-se para uma experiência especial durante sua viagem.</p>
+</div>
+
+</main>
+
+<footer>
+AUTOFLIGHT © 2026<br>
+Sua viagem, nossa missão.
+</footer>
+
+<script>
+function configurar(nome) {
+  const file = document.getElementById(nome + "File");
+  const play = document.getElementById(nome + "Play");
+  const pause = document.getElementById(nome + "Pause");
+  const status = document.getElementById(nome + "Status");
+  const audio = new Audio();
+
+  file.addEventListener("change", () => {
+    if (!file.files.length) return;
+    audio.pause();
+    audio.src = URL.createObjectURL(file.files[0]);
+    play.disabled = false;
+    pause.disabled = false;
+    status.textContent = "Áudio carregado: " + file.files[0].name;
+  });
+
+  play.addEventListener("click", () => {
+    audio.play().then(() => {
+      status.textContent = "Comunicado em reprodução";
+    }).catch(() => {
+      status.textContent = "Não foi possível reproduzir o áudio";
+    });
+  });
+
+  pause.addEventListener("click", () => {
+    audio.pause();
+    status.textContent = "Comunicado pausado";
+  });
+
+  audio.addEventListener("ended", () => {
+    status.textContent = "Comunicado concluído";
+  });
+}
+
+configurar("brian");
+configurar("vitoria");
+</script>
+
+</body>
+</html>
