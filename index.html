@@ -172,6 +172,18 @@ Comunicado disponível
 </div>
 </div>
 
+<div class="card">
+<h2>✈ COMUNICADO 07</h2>
+<p>Comissária Vitória — atualização de percurso</p>
+
+<button onclick="tocar('comunicado07')">▶ REPRODUZIR</button>
+<button onclick="pausar('comunicado07')" class="secondary">Ⅱ PAUSAR</button>
+
+<div class="status" id="comunicado07Status">
+Comunicado disponível
+</div>
+</div>
+
 </main>
 
 <footer>
@@ -186,7 +198,8 @@ const audios = {
   vitoria: new Audio("./Vitoria_boas_vindas.mp3"),
   comunicado04: new Audio("./Comunicado_04_Brian.mp3"),
   comunicado05: new Audio("./Comunicado_05_Vitoria.mp3"),
-  comunicado06: new Audio("./Comunicado_06_Brian.mp3")
+  comunicado06: new Audio("./Comunicado_06_Brian.mp3"),
+  comunicado07: new Audio("./Comunicado_07_Vitoria.mp3")
 };
 
 let sequenciaAtiva = false;
@@ -197,7 +210,8 @@ const etapas = [
   "brian",
   "comunicado04",
   "comunicado05",
-  "comunicado06"
+  "comunicado06",
+  "comunicado07"
 ];
 
 const mensagens = {
@@ -205,7 +219,8 @@ const mensagens = {
   brian: "Brian: apresentação do comandante",
   comunicado04: "Brian: início oficial da viagem",
   comunicado05: "Vitória: orientações de segurança",
-  comunicado06: "Brian: informações sobre o trajeto"
+  comunicado06: "Brian: informações sobre o trajeto",
+  comunicado07: "Vitória: atualização de percurso"
 };
 
 const start = document.getElementById("start");
