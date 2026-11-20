@@ -115,73 +115,57 @@ Aguardando autorização para embarque
 <div class="card">
 <h2>✈ COMANDANTE BRIAN</h2>
 <p>Comunicados do comandante</p>
-
 <button onclick="tocar('brian')">▶ REPRODUZIR</button>
 <button onclick="pausar('brian')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="brianStatus">
-Comunicado disponível
-</div>
+<div class="status" id="brianStatus">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMISSÁRIA VITÓRIA</h2>
 <p>Comunicados da tripulação</p>
-
 <button onclick="tocar('vitoria')">▶ REPRODUZIR</button>
 <button onclick="pausar('vitoria')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="vitoriaStatus">
-Comunicado disponível
-</div>
+<div class="status" id="vitoriaStatus">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMUNICADO 04</h2>
 <p>Comandante Brian — início da viagem</p>
-
 <button onclick="tocar('comunicado04')">▶ REPRODUZIR</button>
 <button onclick="pausar('comunicado04')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="comunicado04Status">
-Comunicado disponível
-</div>
+<div class="status" id="comunicado04Status">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMUNICADO 05</h2>
 <p>Comissária Vitória — orientações de segurança</p>
-
 <button onclick="tocar('comunicado05')">▶ REPRODUZIR</button>
 <button onclick="pausar('comunicado05')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="comunicado05Status">
-Comunicado disponível
-</div>
+<div class="status" id="comunicado05Status">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMUNICADO 06</h2>
 <p>Comandante Brian — informações sobre o trajeto</p>
-
 <button onclick="tocar('comunicado06')">▶ REPRODUZIR</button>
 <button onclick="pausar('comunicado06')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="comunicado06Status">
-Comunicado disponível
-</div>
+<div class="status" id="comunicado06Status">Comunicado disponível</div>
 </div>
 
 <div class="card">
 <h2>✈ COMUNICADO 07</h2>
 <p>Comissária Vitória — atualização de percurso</p>
-
 <button onclick="tocar('comunicado07')">▶ REPRODUZIR</button>
 <button onclick="pausar('comunicado07')" class="secondary">Ⅱ PAUSAR</button>
-
-<div class="status" id="comunicado07Status">
-Comunicado disponível
+<div class="status" id="comunicado07Status">Comunicado disponível</div>
 </div>
+
+<div class="card">
+<h2>✈ COMUNICADO 08</h2>
+<p>Comandante Brian — preparação para chegada</p>
+<button onclick="tocar('comunicado08')">▶ REPRODUZIR</button>
+<button onclick="pausar('comunicado08')" class="secondary">Ⅱ PAUSAR</button>
+<div class="status" id="comunicado08Status">Comunicado disponível</div>
 </div>
 
 </main>
@@ -199,7 +183,8 @@ const audios = {
   comunicado04: new Audio("./Comunicado_04_Brian.mp3"),
   comunicado05: new Audio("./Comunicado_05_Vitoria.mp3"),
   comunicado06: new Audio("./Comunicado_06_Brian.mp3"),
-  comunicado07: new Audio("./Comunicado_07_Vitoria.mp3")
+  comunicado07: new Audio("./Comunicado_07_Vitoria.mp3"),
+  comunicado08: new Audio("./Comunicado_08_Brian.mp3")
 };
 
 let sequenciaAtiva = false;
@@ -211,7 +196,8 @@ const etapas = [
   "comunicado04",
   "comunicado05",
   "comunicado06",
-  "comunicado07"
+  "comunicado07",
+  "comunicado08"
 ];
 
 const mensagens = {
@@ -220,7 +206,8 @@ const mensagens = {
   comunicado04: "Brian: início oficial da viagem",
   comunicado05: "Vitória: orientações de segurança",
   comunicado06: "Brian: informações sobre o trajeto",
-  comunicado07: "Vitória: atualização de percurso"
+  comunicado07: "Vitória: atualização de percurso",
+  comunicado08: "Brian: preparação para chegada"
 };
 
 const start = document.getElementById("start");
@@ -229,10 +216,7 @@ const sequenceStatus = document.getElementById("sequenceStatus");
 
 function atualizar(nome, mensagem) {
   const elemento = document.getElementById(nome + "Status");
-
-  if (elemento) {
-    elemento.textContent = mensagem;
-  }
+  if (elemento) elemento.textContent = mensagem;
 }
 
 function pararTodos() {
@@ -281,7 +265,6 @@ async function proximaEtapa() {
   if (etapa >= etapas.length) {
     sequenciaAtiva = false;
     liberarControles();
-
     sequenceStatus.textContent = "Sequência de viagem concluída";
     return;
   }
@@ -297,7 +280,6 @@ async function proximaEtapa() {
   } catch (erro) {
     sequenciaAtiva = false;
     liberarControles();
-
     atualizar(nome, "Erro ao reproduzir áudio");
     sequenceStatus.textContent = "Erro ao carregar o comunicado";
   }
@@ -305,7 +287,6 @@ async function proximaEtapa() {
 
 start.addEventListener("click", () => {
   pararTodos();
-
   etapa = 0;
   sequenciaAtiva = true;
 
@@ -319,7 +300,6 @@ stop.addEventListener("click", () => {
   sequenciaAtiva = false;
   pararTodos();
   liberarControles();
-
   sequenceStatus.textContent = "Sequência encerrada";
 });
 
