@@ -5,8 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AUTOFLIGHT</title>
+
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   background: #101a2a;
@@ -14,28 +16,33 @@ body {
   font-family: Arial, sans-serif;
   text-align: center;
 }
+
 header {
   padding: 30px 15px;
   background: #07111f;
   border-bottom: 2px solid #c6a66b;
 }
+
 h1 {
   color: #d8bd83;
   letter-spacing: 5px;
   font-size: 30px;
   margin: 0;
 }
+
 .subtitle {
   color: #bdc8d7;
   margin-top: 10px;
   font-size: 13px;
   letter-spacing: 2px;
 }
+
 main {
   max-width: 480px;
   margin: auto;
   padding: 20px;
 }
+
 .card {
   background: #1c2b40;
   border: 1px solid #40516a;
@@ -43,8 +50,10 @@ main {
   padding: 22px;
   margin: 20px 0;
 }
+
 h2 { color: #e0c58e; }
 p { color: #c4cfdd; }
+
 button {
   width: 100%;
   background: #c5a66b;
@@ -56,16 +65,20 @@ button {
   font-size: 16px;
   font-weight: bold;
 }
+
 button.secondary {
   background: #344860;
   color: white;
 }
+
 button:disabled { opacity: .45; }
+
 .status {
   color: #d8bd83;
   font-size: 13px;
   margin-top: 12px;
 }
+
 footer {
   color: #8795a8;
   padding: 25px;
@@ -73,6 +86,7 @@ footer {
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -86,30 +100,50 @@ footer {
 <h2>✈ CENTRAL DE OPERAÇÕES</h2>
 <p>Prepare-se para sua viagem.</p>
 <button id="start">✈ INICIAR VIAGEM</button>
-<button id="stop" class="secondary" disabled>■ ENCERRAR SEQUÊNCIA</button>
-<div class="status" id="sequenceStatus">Aguardando autorização para embarque</div>
+<button id="stop" class="secondary" disabled>
+■ ENCERRAR SEQUÊNCIA
+</button>
+<div class="status" id="sequenceStatus">
+Aguardando autorização para embarque
+</div>
 </div>
 
 <div class="card">
 <h2>✈ COMANDANTE BRIAN</h2>
 <p>Comunicados do comandante</p>
 <button onclick="tocar('brian')">▶ REPRODUZIR</button>
-<button onclick="pausar('brian')" class="secondary">Ⅱ PAUSAR</button>
-<div class="status" id="brianStatus">Comunicado disponível</div>
+<button onclick="pausar('brian')" class="secondary">
+Ⅱ PAUSAR
+</button>
+<div class="status" id="brianStatus">
+Comunicado disponível
+</div>
 </div>
 
 <div class="card">
 <h2>✈ COMISSÁRIA VITÓRIA</h2>
 <p>Comunicados da tripulação</p>
 <button onclick="tocar('vitoria')">▶ REPRODUZIR</button>
-<button onclick="pausar('vitoria')" class="secondary">Ⅱ PAUSAR</button>
-<div class="status" id="vitoriaStatus">Comunicado disponível</div>
+<button onclick="pausar('vitoria')" class="secondary">
+Ⅱ PAUSAR
+</button>
+<div class="status" id="vitoriaStatus">
+Comunicado disponível
+</div>
+</div>
+
 <div class="card">
-  <h2>✈ COMUNICADO 04</h2>
-  <p>Comandante Brian — início da viagem</p>
-  <button onclick="tocar('comunicado04')">▶ REPRODUZIR</button>
-  <button onclick="pausar('comunicado04')" class="secondary">Ⅱ PAUSAR</button>
-  <div class="status" id="comunicado04Status">Comunicado disponível</div>
+<h2>✈ COMUNICADO 04</h2>
+<p>Comandante Brian — início da viagem</p>
+<button onclick="tocar('comunicado04')">
+▶ REPRODUZIR
+</button>
+<button onclick="pausar('comunicado04')" class="secondary">
+Ⅱ PAUSAR
+</button>
+<div class="status" id="comunicado04Status">
+Comunicado disponível
+</div>
 </div>
 
 </main>
@@ -120,13 +154,16 @@ SUA VIAGEM, NOSSA MISSÃO
 </footer>
 
 <script>
+
 const audios = {
   brian: new Audio("./Brian_boas_vindas.mp3"),
-  vitoria: new Audio("./Vitoria_boas_vindas.mp3")
+  vitoria: new Audio("./Vitoria_boas_vindas.mp3"),
+  comunicado04: new Audio("./Comunicado_04_Brian.mp3")
 };
 
 let sequenciaAtiva = false;
 let etapa = 0;
+
 const etapas = ["vitoria", "brian"];
 
 const start = document.getElementById("start");
@@ -134,7 +171,10 @@ const stop = document.getElementById("stop");
 const sequenceStatus = document.getElementById("sequenceStatus");
 
 function atualizar(nome, mensagem) {
-  document.getElementById(nome + "Status").textContent = mensagem;
+  const elemento = document.getElementById(nome + "Status");
+  if (elemento) {
+    elemento.textContent = mensagem;
+  }
 }
 
 function pararTodos() {
@@ -145,16 +185,25 @@ function pararTodos() {
 }
 
 async function tocar(nome) {
+  if (!audios[nome]) {
+    atualizar(nome, "Áudio não cadastrado");
+    return;
+  }
+
+  sequenciaAtiva = false;
   pararTodos();
+
   try {
     await audios[nome].play();
     atualizar(nome, "Comunicado em reprodução");
   } catch (erro) {
-    atualizar(nome, "Erro ao reproduzir áudio");
+    atualizar(nome, "Erro ao reproduzir áudio. Verifique o arquivo MP3.");
   }
 }
 
 function pausar(nome) {
+  if (!audios[nome]) return;
+
   audios[nome].pause();
   atualizar(nome, "Comunicado pausado");
 }
@@ -217,6 +266,11 @@ etapas.forEach(nome => {
     }
   });
 });
+
+audios.comunicado04.addEventListener("ended", () => {
+  atualizar("comunicado04", "Comunicado concluído");
+});
+
 </script>
 
 </body>
