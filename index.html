@@ -148,6 +148,18 @@ Comunicado disponível
 </div>
 </div>
 
+<div class="card">
+<h2>✈ COMUNICADO 05</h2>
+<p>Comissária Vitória — orientações de segurança</p>
+
+<button onclick="tocar('comunicado05')">▶ REPRODUZIR</button>
+<button onclick="pausar('comunicado05')" class="secondary">Ⅱ PAUSAR</button>
+
+<div class="status" id="comunicado05Status">
+Comunicado disponível
+</div>
+</div>
+
 </main>
 
 <footer>
@@ -160,18 +172,25 @@ SUA VIAGEM, NOSSA MISSÃO
 const audios = {
   brian: new Audio("./Brian_boas_vindas.mp3"),
   vitoria: new Audio("./Vitoria_boas_vindas.mp3"),
-  comunicado04: new Audio("./Comunicado_04_Brian.mp3")
+  comunicado04: new Audio("./Comunicado_04_Brian.mp3"),
+  comunicado05: new Audio("./Comunicado_05_Vitoria.mp3")
 };
 
 let sequenciaAtiva = false;
 let etapa = 0;
 
-const etapas = ["vitoria", "brian", "comunicado04"];
+const etapas = [
+  "vitoria",
+  "brian",
+  "comunicado04",
+  "comunicado05"
+];
 
 const mensagens = {
   vitoria: "Vitória: boas-vindas a bordo",
   brian: "Brian: apresentação do comandante",
-  comunicado04: "Brian: início oficial da viagem"
+  comunicado04: "Brian: início oficial da viagem",
+  comunicado05: "Vitória: orientações de segurança"
 };
 
 const start = document.getElementById("start");
@@ -193,11 +212,19 @@ function pararTodos() {
   });
 }
 
+function liberarControles() {
+  start.disabled = false;
+  stop.disabled = true;
+}
+
 async function tocar(nome) {
   if (!audios[nome]) return;
 
   sequenciaAtiva = false;
   pararTodos();
+  liberarControles();
+
+  sequenceStatus.textContent = "Reprodução manual";
 
   try {
     await audios[nome].play();
@@ -211,13 +238,11 @@ function pausar(nome) {
   if (!audios[nome]) return;
 
   sequenciaAtiva = false;
-  audios[nome].pause();
-
-  start.disabled = false;
-  stop.disabled = true;
+  pararTodos();
+  liberarControles();
 
   atualizar(nome, "Comunicado pausado");
-  sequenceStatus.textContent = "Sequência pausada";
+  sequenceStatus.textContent = "Sequência interrompida";
 }
 
 async function proximaEtapa() {
@@ -225,11 +250,9 @@ async function proximaEtapa() {
 
   if (etapa >= etapas.length) {
     sequenciaAtiva = false;
-    start.disabled = false;
-    stop.disabled = true;
+    liberarControles();
 
     sequenceStatus.textContent = "Sequência de viagem concluída";
-
     return;
   }
 
@@ -237,15 +260,13 @@ async function proximaEtapa() {
   const audio = audios[nome];
 
   sequenceStatus.textContent = mensagens[nome];
-
   atualizar(nome, "Comunicado em reprodução");
 
   try {
     await audio.play();
   } catch (erro) {
     sequenciaAtiva = false;
-    start.disabled = false;
-    stop.disabled = true;
+    liberarControles();
 
     atualizar(nome, "Erro ao reproduzir áudio");
     sequenceStatus.textContent = "Erro ao carregar o comunicado";
@@ -266,28 +287,21 @@ start.addEventListener("click", () => {
 
 stop.addEventListener("click", () => {
   sequenciaAtiva = false;
-
   pararTodos();
-
-  start.disabled = false;
-  stop.disabled = true;
+  liberarControles();
 
   sequenceStatus.textContent = "Sequência encerrada";
 });
 
 etapas.forEach(nome => {
-
   audios[nome].addEventListener("ended", () => {
-
     atualizar(nome, "Comunicado concluído");
 
     if (sequenciaAtiva) {
       etapa++;
       proximaEtapa();
     }
-
   });
-
 });
 
 </script>
