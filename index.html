@@ -64,6 +64,7 @@ button {
   margin: 7px 0;
   font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 button.secondary {
@@ -99,10 +100,13 @@ footer {
 <div class="card">
 <h2>✈ CENTRAL DE OPERAÇÕES</h2>
 <p>Prepare-se para sua viagem.</p>
+
 <button id="start">✈ INICIAR VIAGEM</button>
+
 <button id="stop" class="secondary" disabled>
 ■ ENCERRAR SEQUÊNCIA
 </button>
+
 <div class="status" id="sequenceStatus">
 Aguardando autorização para embarque
 </div>
@@ -111,10 +115,10 @@ Aguardando autorização para embarque
 <div class="card">
 <h2>✈ COMANDANTE BRIAN</h2>
 <p>Comunicados do comandante</p>
+
 <button onclick="tocar('brian')">▶ REPRODUZIR</button>
-<button onclick="pausar('brian')" class="secondary">
-Ⅱ PAUSAR
-</button>
+<button onclick="pausar('brian')" class="secondary">Ⅱ PAUSAR</button>
+
 <div class="status" id="brianStatus">
 Comunicado disponível
 </div>
@@ -123,10 +127,10 @@ Comunicado disponível
 <div class="card">
 <h2>✈ COMISSÁRIA VITÓRIA</h2>
 <p>Comunicados da tripulação</p>
+
 <button onclick="tocar('vitoria')">▶ REPRODUZIR</button>
-<button onclick="pausar('vitoria')" class="secondary">
-Ⅱ PAUSAR
-</button>
+<button onclick="pausar('vitoria')" class="secondary">Ⅱ PAUSAR</button>
+
 <div class="status" id="vitoriaStatus">
 Comunicado disponível
 </div>
@@ -135,12 +139,10 @@ Comunicado disponível
 <div class="card">
 <h2>✈ COMUNICADO 04</h2>
 <p>Comandante Brian — início da viagem</p>
-<button onclick="tocar('comunicado04')">
-▶ REPRODUZIR
-</button>
-<button onclick="pausar('comunicado04')" class="secondary">
-Ⅱ PAUSAR
-</button>
+
+<button onclick="tocar('comunicado04')">▶ REPRODUZIR</button>
+<button onclick="pausar('comunicado04')" class="secondary">Ⅱ PAUSAR</button>
+
 <div class="status" id="comunicado04Status">
 Comunicado disponível
 </div>
@@ -164,7 +166,13 @@ const audios = {
 let sequenciaAtiva = false;
 let etapa = 0;
 
-const etapas = ["vitoria", "brian"];
+const etapas = ["vitoria", "brian", "comunicado04"];
+
+const mensagens = {
+  vitoria: "Vitória: boas-vindas a bordo",
+  brian: "Brian: apresentação do comandante",
+  comunicado04: "Brian: início oficial da viagem"
+};
 
 const start = document.getElementById("start");
 const stop = document.getElementById("stop");
@@ -172,6 +180,7 @@ const sequenceStatus = document.getElementById("sequenceStatus");
 
 function atualizar(nome, mensagem) {
   const elemento = document.getElementById(nome + "Status");
+
   if (elemento) {
     elemento.textContent = mensagem;
   }
@@ -185,10 +194,7 @@ function pararTodos() {
 }
 
 async function tocar(nome) {
-  if (!audios[nome]) {
-    atualizar(nome, "Áudio não cadastrado");
-    return;
-  }
+  if (!audios[nome]) return;
 
   sequenciaAtiva = false;
   pararTodos();
@@ -204,8 +210,14 @@ async function tocar(nome) {
 function pausar(nome) {
   if (!audios[nome]) return;
 
+  sequenciaAtiva = false;
   audios[nome].pause();
+
+  start.disabled = false;
+  stop.disabled = true;
+
   atualizar(nome, "Comunicado pausado");
+  sequenceStatus.textContent = "Sequência pausada";
 }
 
 async function proximaEtapa() {
@@ -215,17 +227,16 @@ async function proximaEtapa() {
     sequenciaAtiva = false;
     start.disabled = false;
     stop.disabled = true;
+
     sequenceStatus.textContent = "Sequência de viagem concluída";
+
     return;
   }
 
   const nome = etapas[etapa];
   const audio = audios[nome];
 
-  sequenceStatus.textContent =
-    nome === "vitoria"
-    ? "Vitória: boas-vindas a bordo"
-    : "Brian: apresentação do comandante";
+  sequenceStatus.textContent = mensagens[nome];
 
   atualizar(nome, "Comunicado em reprodução");
 
@@ -235,40 +246,48 @@ async function proximaEtapa() {
     sequenciaAtiva = false;
     start.disabled = false;
     stop.disabled = true;
+
+    atualizar(nome, "Erro ao reproduzir áudio");
     sequenceStatus.textContent = "Erro ao carregar o comunicado";
   }
 }
 
 start.addEventListener("click", () => {
   pararTodos();
+
   etapa = 0;
   sequenciaAtiva = true;
+
   start.disabled = true;
   stop.disabled = false;
+
   proximaEtapa();
 });
 
 stop.addEventListener("click", () => {
   sequenciaAtiva = false;
+
   pararTodos();
+
   start.disabled = false;
   stop.disabled = true;
+
   sequenceStatus.textContent = "Sequência encerrada";
 });
 
 etapas.forEach(nome => {
+
   audios[nome].addEventListener("ended", () => {
+
     atualizar(nome, "Comunicado concluído");
 
     if (sequenciaAtiva) {
       etapa++;
       proximaEtapa();
     }
-  });
-});
 
-audios.comunicado04.addEventListener("ended", () => {
-  atualizar("comunicado04", "Comunicado concluído");
+  });
+
 });
 
 </script>
